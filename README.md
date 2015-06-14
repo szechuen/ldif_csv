@@ -20,7 +20,7 @@ Pre-requisite: **gcc** or **clang** (change Makefile if necessary)
 ./ldif_csv <input_file.ldif> <output_file.csv>
 ```
 
-where `<input_file>` is of type LDIF **(WITHOUT LINE WRAP!)** and `<output_file>` is of type CSV
+where `<input_file.ldif>` is of type LDIF **(WITHOUT LINE WRAP!)** and `<output_file.csv>` is of type CSV
 
 ##### Sample input LDIF retrieval
 
