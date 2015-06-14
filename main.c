@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "base64.h"
 
@@ -88,6 +89,8 @@ int main(int argc, char * argv[])
 
     while(fgets(line, MAX_LINE_LEN, in_ptr) != NULL)
     {
+        if((trim_nl(line) != 0) && !feof(in_ptr)) fprintf(stderr, "Line Truncated: %s, Increase MAX_LINE_LEN\n", line);
+
         if(!is_empty(line) && !is_comment(line) && (split_keyval(line, &key, &val) == 0))
         {
             /* Search array for current key */
@@ -99,9 +102,22 @@ int main(int argc, char * argv[])
             /* Current key not seen so append to array */
             if(cur_key == key_count)
             {
-                strncpy(keys[key_count], key, MAX_KEY_LEN);
-                fprintf(stdout, "Key Detected: %s\n", keys[key_count]);
-                key_count++;
+                if(key_count < MAX_KEY)
+                {
+                    strncpy(keys[key_count], key, MAX_KEY_LEN);
+                    if(keys[key_count][MAX_KEY_LEN-1] != '\0')
+                    {
+                        fprintf(stderr, "Key Truncated: %s, Increase MAX_KEY_LEN\n", key);
+                        keys[key_count][MAX_KEY_LEN-1] = '\0';
+                    }
+                    fprintf(stdout, "Key Detected: %s\n", keys[key_count]);
+
+                    key_count++;
+                }
+                else
+                {
+                    fprintf(stderr, "Key Ignored: %s, Increase MAX_KEY\n", key);
+                }
             }
         }
     }
@@ -134,6 +150,8 @@ int main(int argc, char * argv[])
 
     while(fgets(line, MAX_LINE_LEN, in_ptr) != NULL)
     {
+        if((trim_nl(line) != 0) && !feof(in_ptr)) fprintf(stderr, "Line Truncated: %s, Increase MAX_LINE_LEN\n", line);
+
         /* End of new record */
         if(is_empty(line) && new_record)
         {
@@ -163,11 +181,21 @@ int main(int argc, char * argv[])
                 {
                     if(strncmp(key, keys[cur_key], MAX_KEY_LEN) == 0)
                     {
+                        assert(cur_key < MAX_KEY);
+
                         /* Decode Base64 fields */
                         if((*val == ':') && (*(val+1) == ' ')) decode_base64(val);
 
                         /* Value for current key has not been set */
-                        if(*(vals[cur_key]) == '\0') strncpy(vals[cur_key], val, MAX_VAL_LEN);
+                        if(*(vals[cur_key]) == '\0')
+                        {
+                            strncpy(vals[cur_key], val, MAX_VAL_LEN);
+                            if(vals[cur_key][MAX_VAL_LEN-1] != '\0')
+                            {
+                                fprintf(stderr, "Value Truncated: %s, Increase MAX_VAL_LEN\n", val);
+                                vals[cur_key][MAX_VAL_LEN-1] = '\0';
+                            }
+                        }
                         /* Value for current key has been set, append to existing value */
                         else strncat_delimit(vals[cur_key], val);
 
@@ -225,7 +253,6 @@ int split_keyval(char * keyval, char ** key_ptr, char ** val_ptr)
 
     strip_lead(&val);
     if(*val == '\0') return 1;
-    trim_nl(val);
 
     *key_ptr = key;
     *val_ptr = val;
@@ -238,9 +265,15 @@ int decode_base64(char * str)
 { 
     char tmp[MAX_VAL_LEN];
     strncpy(tmp, str+2, MAX_VAL_LEN);
+    if(tmp[MAX_VAL_LEN-1] != '\0')
+    {
+        fprintf(stderr, "Value Truncated: %s, Increase MAX_VAL_LEN\n", str);
+        tmp[MAX_VAL_LEN-1] = '\0';
+    }
 
     /* Safe without length limit since decoded string should be shorter than
-     * Base64 encoded string */
+     * Base64 encoded string
+     */
     Base64decode(str, tmp);
     replace_nl(str);
 
@@ -251,9 +284,13 @@ int strncat_delimit(char * dest, char * src)
 {
     char tmp[MAX_VAL_LEN];
 
-    strncpy(tmp, "; ", MAX_VAL_LEN);
-    strncat(tmp, src, MAX_VAL_LEN-strlen(tmp));
-    strncat(dest, tmp, MAX_VAL_LEN-strlen(dest));
+    assert(MAX_VAL_LEN >= 3);
+    strncpy(tmp, "; ", 3);
+
+    if(strlen(src) > (MAX_VAL_LEN-strlen(dest)-strlen(tmp)-1)) fprintf(stderr, "Value Truncated: %s, Increase MAX_VAL_LEN\n", src);
+
+    strncat(tmp, src, MAX_VAL_LEN-strlen(tmp)-1);
+    strncat(dest, tmp, MAX_VAL_LEN-strlen(dest)-1);
 
     return 0;
 }
@@ -282,9 +319,12 @@ int trim_nl(char * str)
 {
     while((*str != '\n') && (*str != '\0')) str++;
 
-    *str = '\0';
-
-    return 0;
+    if(*str == '\0') return 1;
+    else
+    {
+        *str = '\0';
+        return 0;
+    }
 }
 
 int replace_quote(char * str)
