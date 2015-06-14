@@ -150,8 +150,6 @@ int main(int argc, char * argv[])
 
     while(fgets(line, MAX_LINE_LEN, in_ptr) != NULL)
     {
-        if((trim_nl(line) != 0) && !feof(in_ptr)) fprintf(stderr, "Line Truncated: %s, Increase MAX_LINE_LEN\n", line);
-
         /* End of new record */
         if(is_empty(line) && new_record)
         {
@@ -174,6 +172,8 @@ int main(int argc, char * argv[])
         /* Continuation of current record */
         else if(!is_comment(line))
         {
+            if((trim_nl(line) != 0) && !feof(in_ptr)) fprintf(stderr, "Line Truncated: %s, Increase MAX_LINE_LEN\n", line);
+            
             if(split_keyval(line, &key, &val) == 0)
             {
                 /* Search array for current key */
@@ -226,7 +226,7 @@ int main(int argc, char * argv[])
         record_count++;
     }
 
-    fprintf(stdout, "Set Count: %lu\n\n", record_count);
+    fprintf(stdout, "Record Count: %lu\n\n", record_count);
 
 
     /* And... we're done! */
@@ -262,7 +262,7 @@ int split_keyval(char * keyval, char ** key_ptr, char ** val_ptr)
 
 
 int decode_base64(char * str)
-{ 
+{
     char tmp[MAX_VAL_LEN];
     strncpy(tmp, str+2, MAX_VAL_LEN);
     if(tmp[MAX_VAL_LEN-1] != '\0')
@@ -285,7 +285,7 @@ int strncat_delimit(char * dest, char * src)
     char tmp[MAX_VAL_LEN];
 
     assert(MAX_VAL_LEN >= 3);
-    strncpy(tmp, "; ", 3);
+    strncpy(tmp, "; ", MAX_VAL_LEN);
 
     if(strlen(src) > (MAX_VAL_LEN-strlen(dest)-strlen(tmp)-1)) fprintf(stderr, "Value Truncated: %s, Increase MAX_VAL_LEN\n", src);
 
