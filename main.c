@@ -36,12 +36,6 @@ int split_keyval(char * keyval, char ** key_ptr, char ** val_ptr);
 
 int main(int argc, char * argv[])
 {
-    if(argc != 3)
-    {
-        fprintf(stderr, "Usage: %s <input_file> <output_file>\n", argv[0]);
-        return 1;
-    }
-
     /* Initialize ALL variables (darn ANSI) */
 
     char line[MAX_LINE_LEN];
@@ -57,6 +51,13 @@ int main(int argc, char * argv[])
     char vals[MAX_KEY][MAX_VAL_LEN];
     int new_record; /* Actually a boolean */
     unsigned long record_count;
+
+
+    if(argc != 3)
+    {
+        fprintf(stderr, "Usage: %s <input_file> <output_file>\n", argv[0]);
+        return 1;
+    }
 
     
     /* Open files for loading and dumping */
