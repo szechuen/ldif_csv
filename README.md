@@ -17,7 +17,7 @@ Pre-requisite: **gcc** or **clang** (change Makefile if necessary)
 ### Usage
 
 ```bash
-./ldif_csv <input_file> <output_file>
+./ldif_csv <input_file.ldif> <output_file.csv>
 ```
 
 where `<input_file>` is of type LDIF **(WITHOUT LINE WRAP!)** and `<output_file>` is of type CSV
