@@ -10,14 +10,14 @@
 /* START OF CONFIG */
 
 /* Note: Affects memory usage
- * Default uses ~150KB
+ * Default uses ~300KB
  * Increase only if necessary
  */
 
 #define MAX_LINE_LEN 1024
 #define MAX_KEY 128
 #define MAX_KEY_LEN 128
-#define MAX_VAL_LEN 1024
+#define MAX_VAL_LEN 2048
 
 /*  END OF CONFIG  */
 
@@ -107,12 +107,14 @@ int main(int argc, char * argv[])
                     strncpy(keys[key_count], key, MAX_KEY_LEN);
                     if(keys[key_count][MAX_KEY_LEN-1] != '\0')
                     {
-                        fprintf(stderr, "Key Truncated: %s, Increase MAX_KEY_LEN\n", key);
+                        fprintf(stderr, "Key Truncated: %s (ignored), Increase MAX_KEY_LEN\n", key);
                         keys[key_count][MAX_KEY_LEN-1] = '\0';
                     }
-                    fprintf(stdout, "Key Detected: %s\n", keys[key_count]);
-
-                    key_count++;
+                    else
+                    {
+                        fprintf(stdout, "Key Detected: %s\n", keys[key_count]);
+                        key_count++;
+                    }
                 }
                 else
                 {
@@ -173,7 +175,7 @@ int main(int argc, char * argv[])
         else if(!is_comment(line))
         {
             if((trim_nl(line) != 0) && !feof(in_ptr)) fprintf(stderr, "Line Truncated: %s, Increase MAX_LINE_LEN\n", line);
-            
+
             if(split_keyval(line, &key, &val) == 0)
             {
                 /* Search array for current key */
