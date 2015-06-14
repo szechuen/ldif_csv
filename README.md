@@ -20,7 +20,7 @@ Pre-requisite: **gcc** or **clang** (change Makefile if necessary)
 ./ldif_csv <input_file> <output_file>
 ```
 
-where **\<input_file\>** is of type LDIF (WITHOUT LINE WRAP) and **\<output_file\>** is of type CSV
+where `<input_file>` is of type LDIF **(WITHOUT LINE WRAP!)** and `<output_file>` is of type CSV
 
 ##### Sample input LDIF retrieval
 
@@ -28,7 +28,7 @@ where **\<input_file\>** is of type LDIF (WITHOUT LINE WRAP) and **\<output_file
 ldapsearch -x -H ldap://<host>:<port> -b "<search_base>" -s sub -LLL -o ldif-wrap=no "<filter>" > <input_file.ldif>
 ```
 
-Note: Use **-LLL** to disable all comments and **-o ldif-wrap=no** to disable line wrapping
+Note: Use `-LLL` to disable all comments and `-o ldif-wrap=no` to disable line wrapping
 
 
 ### Performance
