@@ -38,6 +38,9 @@ int main(int argc, char * argv[])
 {
     /* Initialize ALL variables (darn ANSI) */
 
+    FILE * in_ptr = NULL;
+    FILE * out_ptr = NULL;
+
     char line[MAX_LINE_LEN];
 
     /* Cursors to key and value in line */
@@ -62,7 +65,7 @@ int main(int argc, char * argv[])
     
     /* Open files for loading and dumping */
 
-    FILE * in_ptr = fopen(argv[1], "r");
+    in_ptr = fopen(argv[1], "r");
 
     if(in_ptr == NULL)
     {
@@ -70,7 +73,7 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    FILE * out_ptr = fopen(argv[2], "w");
+    out_ptr = fopen(argv[2], "w");
 
     if(out_ptr == NULL)
     {
