@@ -33,6 +33,6 @@ Note: Use `-LLL` to disable all comments and `-o ldif-wrap=no` to disable line w
 
 ### Performance
 
-**~500k records, ~100 keys:** ~21s on MacBook Pro (2.2 GHz Intel Core i7) [Sze Chuen Tan]
+**~500k records, ~100 keys (700MB):** ~21s on MacBook Pro (2.2 GHz Intel Core i7) [Sze Chuen Tan]
 
 Submit functionality bugs, security vulnerabilities and performance reports under Github Issues (https://github.com/szechuen/ldif_csv/issues). 
